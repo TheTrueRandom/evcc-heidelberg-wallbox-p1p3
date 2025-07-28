@@ -19,7 +19,7 @@ const fastify = Fastify({
 });
 
 fastify.setErrorHandler((error, request, reply) => {
-    request.log.error({error, request: {method: request.method, url: request.url}}, 'An error occurred in a handler');
+    request.log.error({error: {message: error.message}, request: {method: request.method, url: request.url}}, 'An error occurred in a handler');
     reply.status(error.statusCode || 500).send({
         success: false,
         message: error.message || 'Internal Server Error',
@@ -53,7 +53,7 @@ fastify.post('/enable', (request, reply) => {
     return true;
 });
 fastify.post('/phases1p3p', async (request, reply) => {
-    fastify.log.info(`EVCC request set to set phases to ${request.body.value}`);
+    fastify.log.info(`EVCC request set phases to ${request.body.value}`);
     const enable3Phase = parseFloat(request.body.value) === 3;
     return await wallbox.set3Phase(enable3Phase);
 });

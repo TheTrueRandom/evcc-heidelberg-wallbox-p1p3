@@ -45,13 +45,13 @@ export default class Wallbox extends EventEmitter{
     }
 
     getStrStatus(state) {
-        // todo evcc has some logic for status 10
         switch (state) {
             case 2:
             case 3:
                 return "A"
             case 4:
             case 5:
+            case 10: // todo evcc has some logic for status 10, should definitely not just return B
                 return "B";
             case 6:
             case 7:
@@ -142,11 +142,12 @@ export default class Wallbox extends EventEmitter{
     }
 
     async #set3Phase(toEnable) {
-        if (this.p1P3Switch.enabled === toEnable) {
+        const isSwitchEnabled = await this.p1P3Switch.isEnabled();
+        if (isSwitchEnabled === toEnable) {
             return true;
         }
 
-        this.logger.info(`Need to switch 3 phase from ${this.p1P3Switch.enabled} to ${toEnable}`);
+        this.logger.info(`Need to switch 3 phase from ${isSwitchEnabled} to ${toEnable}`);
         if (Date.now() - this.lastPhaseSwitch.getTime() < 10_000) {
             this.logger.warn(`Last Switch of phase was ${this.lastPhaseSwitch}, denying changing too fast.`);
             return false;
