@@ -13,6 +13,7 @@ export default class Wallbox extends EventEmitter{
         super();
         this.logger = logger;
         this.p1P3Switch = p1p3Switch;
+        this.modbusSlaveId = process.env.MODBUS_SLAVE_ID ?? 1;
 
         if (!process.env.MODBUS_TCP_HOST) {
             throw new Error(`Missing MODBUS_TCP_HOST`);
@@ -28,9 +29,9 @@ export default class Wallbox extends EventEmitter{
         try {
             this.modbusClient = new ModbusRTU();
             await this.modbusClient.connectTCP(this.host, {port: this.port});
-            this.modbusClient.setID(1);
+            this.modbusClient.setID(this.modbusSlaveId);
             this.modbusClient.setTimeout(1000);
-            this.logger.info(`Connected to Modbus TCP server at ${this.host}:${this.port}`);
+            this.logger.info(`Connected to Modbus TCP server at ${this.host}:${this.port} with slaveId ${this.modbusSlaveId}`);
             await this.disableStandby();
         } catch (e) {
             this.logger.error('Failed to connect to Modbus server:', e);

@@ -32,6 +32,7 @@ services:
       - SHELLY_HOST=
       - MODBUS_TCP_HOST=
       - MODBUS_TCP_PORT=
+     #- MODBUS_SLAVE_ID optional or defaults to 1
     pull_policy: always
     restart: unless-stopped
     deploy:
