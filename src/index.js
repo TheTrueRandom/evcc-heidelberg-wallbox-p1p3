@@ -50,6 +50,7 @@ fastify.post('/enable', (request, reply) => {
         fastify.log.info(`EVCC request set enable to ${request.body.value}`);
         wallbox.setMaxCurrent(0);
     }
+    return true;
 });
 fastify.post('/phases1p3p', async (request, reply) => {
     fastify.log.info(`EVCC request set to set phases to ${request.body.value}`);
