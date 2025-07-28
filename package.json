@@ -1,0 +1,27 @@
+{
+  "name": "evcc-heidelberg-wallbox-p1p3",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "TheTrueRandom",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "async-mutex": "^0.5.0",
+    "fastify": "^5.4.0",
+    "got": "^14.4.7",
+    "modbus-serial": "^8.0.21",
+    "pino-pretty": "^13.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheTrueRandom/evcc-heidelberg-wallbox-p1p3.git"
+  },
+  "keywords": [
+    "evcc",
+    "heidelberg",
+    "p1p3",
+    "shelly",
+    "wallbox"
+  ]
+}
