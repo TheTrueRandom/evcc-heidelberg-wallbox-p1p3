@@ -34,7 +34,7 @@ export default class Wallbox extends EventEmitter{
             this.logger.info(`Connected to Modbus TCP server at ${this.host}:${this.port} with slaveId ${this.modbusSlaveId}`);
             await this.disableStandby();
         } catch (e) {
-            this.logger.error('Failed to connect to Modbus server:', e);
+            this.logger.error(e, 'Failed to connect to Modbus server:');
             throw e;
         }
     }
@@ -84,7 +84,7 @@ export default class Wallbox extends EventEmitter{
                 this.emit("refreshSuccess");
                 this.lastRead = new Date();
             } catch (e) {
-                this.logger.error(`Failed reading wallbox`, e);
+                this.logger.error(e, `Failed reading wallbox`);
             } finally {
                 await setTimeout(2_000);
             }
