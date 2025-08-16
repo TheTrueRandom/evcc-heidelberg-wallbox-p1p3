@@ -3,6 +3,21 @@ import {setTimeout} from 'node:timers/promises';
 import {Mutex} from "async-mutex";
 import { once, EventEmitter } from 'node:events';
 
+const networkErrors = [
+    "ECONNRESET",
+    "ECONNREFUSED",
+    "EHOSTUNREACH",
+    "ENETRESET",
+    "ECONNABORTED",
+    "ENETUNREACH",
+    "ENOTCONN",
+    "ESHUTDOWN",
+    "EHOSTDOWN",
+    "ENETDOWN",
+    "EWOULDBLOCK",
+    "EAGAIN"
+];
+
 export default class Wallbox extends EventEmitter{
     lastRead = new Date(0);
     data = null;
@@ -32,7 +47,6 @@ export default class Wallbox extends EventEmitter{
             this.modbusClient.setID(this.modbusSlaveId);
             this.modbusClient.setTimeout(1000);
             this.logger.info(`Connected to Modbus TCP server at ${this.host}:${this.port} with slaveId ${this.modbusSlaveId}`);
-            await this.disableStandby();
         } catch (e) {
             this.logger.error(e, 'Failed to connect to Modbus server:');
             throw e;
@@ -85,6 +99,15 @@ export default class Wallbox extends EventEmitter{
                 this.lastRead = new Date();
             } catch (e) {
                 this.logger.error(e, `Failed reading wallbox`);
+                if (e.errno && networkErrors.includes(e.errno)) {
+                    this.logger.info(`Reconnecting modbus because of ${e.errno}`);
+                    this.modbusClient.close();
+                    try {
+                        await this.connect();
+                    } catch (e) {
+                        this.logger.error(`Failed to reconnect ${e.message}`);
+                    }
+                }
             } finally {
                 await setTimeout(2_000);
             }

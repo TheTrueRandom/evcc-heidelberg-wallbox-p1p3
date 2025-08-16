@@ -30,6 +30,7 @@ fastify.setErrorHandler((error, request, reply) => {
 const shellySwitch = new ShellySwitch(fastify.log);
 const wallbox = new Wallbox(fastify.log, shellySwitch);
 await wallbox.connect();
+await wallbox.disableStandby();
 wallbox.readWallbox();
 
 // GET Endpoints
@@ -44,11 +45,12 @@ fastify.get('/voltage/2', () => wallbox.getEvccData("voltage2"));
 fastify.get('/voltage/3', () => wallbox.getEvccData("voltage3"));
 
 // POST Endpoints
-fastify.post('/enable', (request, reply) => {
+fastify.post('/enable', async (request, reply) => {
     // todo seems like nothing to do if true is sent here, as maxcurrent endpoint will also be called
+    // todo probably max current should just save the value and /enable will finally enable it
     if (request.body.value !== "true") {
         fastify.log.info(`EVCC request set enable to ${request.body.value}`);
-        wallbox.setMaxCurrent(0);
+        await wallbox.setMaxCurrent(0);
     }
     return true;
 });
